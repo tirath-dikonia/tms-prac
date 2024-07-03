@@ -20,7 +20,7 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import AddUser from "@/components/admin/user/AddUser";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import PropTypes from "prop-types";
 import {
   CustomTablePagination,
@@ -29,22 +29,17 @@ import {
   StyledTableRow,
 } from "@/components/table-theme/TableTheme";
 import UpdateUser from "@/components/admin/user/UpdateUser";
+import AddTask from "@/components/management/tasks/AddTask";
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
 }
 
 const rows = [
-  createData("Frozen yoghurt", "some val", "some val", "some val", "some val"),
-  createData(
-    "Ice cream sandwich",
-    "some val",
-    "some val",
-    "some val",
-    "some val"
-  ),
-  createData("Eclair", "some val", "some val", "some val", "some val"),
-  createData("Cupcake", "some val", "some val", "some val", "some val"),
-  createData("Gingerbread", "some val", "some val", "some val", "some val"),
+  createData(1, "Frozen yoghurt", "some val"),
+  createData(2, "Ice cream sandwich", "some val"),
+  createData(3, "Eclair", "some val"),
+  createData(4, "Cupcake", "some val"),
+  createData(5, "Gingerbread", "some val"),
 ];
 
 function TablePaginationActions(props) {
@@ -151,7 +146,7 @@ export default function UserPage() {
         {/* Left side: Search bar */}
         <Box flexGrow={1}>
           <TextField
-            label="Search users..."
+            label="Search tasks..."
             variant="outlined"
             size="small"
             sx={{ backgroundColor: "white" }}
@@ -161,9 +156,9 @@ export default function UserPage() {
 
         {/* Right side: Add User button */}
         <Box ml={2}>
-          <AddUser open={isAddUser} setOpen={setIsAddUser} />
+          <AddTask open={isAddUser} setOpen={setIsAddUser} />
           <Button variant="contained" color="primary" onClick={handleClickOpen}>
-            Add User
+            Add Task
           </Button>
         </Box>
       </Box>
@@ -174,12 +169,10 @@ export default function UserPage() {
           <Table sx={{ minWidth: 20 }} aria-label="simple table">
             <TableHead>
               <StyledTableRow>
-                <StyledTableCell>Name</StyledTableCell>
-                <StyledTableCell>Email</StyledTableCell>
-                <StyledTableCell>User Type</StyledTableCell>
-                <StyledTableCell>Role</StyledTableCell>
-                <StyledTableCell>Username</StyledTableCell>
-                <StyledTableCell>Actions</StyledTableCell>
+                <StyledTableCell>Sr.No</StyledTableCell>
+                <StyledTableCell>Task Type</StyledTableCell>
+                <StyledTableCell>Info</StyledTableCell>
+                <StyledTableCell>Action</StyledTableCell>
               </StyledTableRow>
             </TableHead>
             <TableBody>
@@ -193,12 +186,12 @@ export default function UserPage() {
                   </StyledTableCell>
                   <StyledTableCell>{row.calories}</StyledTableCell>
                   <StyledTableCell>{row.fat}</StyledTableCell>
-                  <StyledTableCell>{row.carbs}</StyledTableCell>
-                  <StyledTableCell>{row.protein}</StyledTableCell>
                   <StyledTableCell>
-                    
-                    <IconButton aria-label="add permissions to user" onClick={handleUpdateUserOpen} >
-                      <EditIcon  color="primary" />
+                    <IconButton
+                      aria-label="add permissions to user"
+                      onClick={handleUpdateUserOpen}
+                    >
+                      <EditIcon color="primary" />
                     </IconButton>
                   </StyledTableCell>
                 </StyledTableRow>

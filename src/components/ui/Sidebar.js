@@ -111,14 +111,14 @@ export default function Sidebar({ collapsed, setOpen, open, isSmallScreen }) {
             main: "Management",
             items: [
               {
-                label: "Projects",
-                href: "/management/projects",
-                identifier: "projects",
-              },
-              {
                 label: "Sheets",
                 href: "/management/sheets",
                 identifier: "sheets",
+              },
+              {
+                label: "Projects",
+                href: "/management/projects",
+                identifier: "projects",
               },
               {
                 label: "Tasks",

@@ -30,6 +30,7 @@ import {
 } from "@/components/table-theme/TableTheme";
 import UpdateUser from "@/components/admin/user/UpdateUser";
 import AddProject from "@/components/management/projects/AddProject";
+import UpdateProject from "@/components/management/projects/UpdateProject";
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
 }
@@ -148,7 +149,7 @@ export default function UserPage() {
         justifyContent="space-between"
         p={2}
       >
-        <UpdateUser open={isUpdateUser} setOpen={setIsUpdateUser} />
+        <UpdateProject open={isUpdateUser} setOpen={setIsUpdateUser} />
         {/* Left side: Search bar */}
         <Box flexGrow={1}>
           <TextField
@@ -176,10 +177,10 @@ export default function UserPage() {
             <TableHead>
               <StyledTableRow>
                 <StyledTableCell>Name</StyledTableCell>
-                <StyledTableCell>Email</StyledTableCell>
-                <StyledTableCell>User Type</StyledTableCell>
-                <StyledTableCell>Role</StyledTableCell>
-                <StyledTableCell>Username</StyledTableCell>
+                <StyledTableCell>Time Allocated</StyledTableCell>
+                <StyledTableCell>Time Consumed</StyledTableCell>
+                <StyledTableCell>Started From</StyledTableCell>
+                <StyledTableCell>Deadline</StyledTableCell>
                 <StyledTableCell>Actions</StyledTableCell>
               </StyledTableRow>
             </TableHead>

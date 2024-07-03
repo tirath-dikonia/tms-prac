@@ -58,7 +58,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export default function AddProject({ open, setOpen }) {
+export default function UpdateProject({ open, setOpen }) {
   const handleClose = () => {
     setOpen(false);
   };
@@ -73,7 +73,7 @@ export default function AddProject({ open, setOpen }) {
         open={open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Add Project
+          Update Project
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -158,7 +158,7 @@ export default function AddProject({ open, setOpen }) {
               InputLabelProps={{ shrink: true }}
             />
             <Button type="submit" variant="contained" color="primary">
-            Add Project
+            Update
             </Button>
           </Form>
           )}

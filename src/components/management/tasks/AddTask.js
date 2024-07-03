@@ -19,33 +19,13 @@ import {
 import { Formik, Form, Field } from "formik";
 import * as yup from "yup";
 
-const roles = [
-  { value: "management", label: "Management" },
-  { value: "developer", label: "Developer" },
-];
-
 const validationSchema = yup.object().shape({
-  project_name: yup.string().required('Project name is required'),
+  task_type: yup.string().required('Task type is required'),
   description: yup.string().required('Description is required'),
-  sec_allocated: yup.number()
-    .integer('Seconds allocated must be an integer')
-    .min(0, 'Seconds allocated must be a positive integer')
-    .required('Seconds allocated is required'),
-  started_from: yup.date()
-    .transform((value, originalValue) => originalValue.split('T')[0])
-    .required('Start date is required')
-    .typeError('Invalid date format, expected YYYY-MM-DD'),
-  deadline: yup.date()
-    .transform((value, originalValue) => originalValue.split('T')[0])
-    .required('Deadline date is required')
-    .typeError('Invalid date format, expected YYYY-MM-DD'),
 });
 const initialValues = {
-  project_name: '',
+    task_type: '',
   description: '',
-  sec_allocated: 0,
-  started_from: '',
-  deadline: '',
 };
 
 
@@ -58,7 +38,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export default function AddProject({ open, setOpen }) {
+export default function AddTask({ open, setOpen }) {
   const handleClose = () => {
     setOpen(false);
   };
@@ -73,7 +53,7 @@ export default function AddProject({ open, setOpen }) {
         open={open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Add Project
+          Add Task Type
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -99,12 +79,12 @@ export default function AddProject({ open, setOpen }) {
             <Form>
             <Field
               as={TextField}
-              name="project_name"
-              label="Project Name"
+              name="task_type"
+              label="Task Type"
               variant="outlined"
               fullWidth
-              error={touched.project_name && Boolean(errors.project_name)}
-              helperText={touched.project_name && errors.project_name}
+              error={touched.task_type && Boolean(errors.task_type)}
+              helperText={touched.task_type && errors.task_type}
               margin="normal"
               size="small"
             />
@@ -119,46 +99,8 @@ export default function AddProject({ open, setOpen }) {
               margin="normal"
               size="small"
             />
-            <Field
-              as={TextField}
-              name="sec_allocated"
-              type="number"
-              label="Seconds Allocated"
-              variant="outlined"
-              fullWidth
-              error={touched.sec_allocated && Boolean(errors.sec_allocated)}
-              helperText={touched.sec_allocated && errors.sec_allocated}
-              margin="normal"
-              size="small"
-            />
-            <Field
-              as={TextField}
-              name="started_from"
-              type="date"
-              label="Started From"
-              variant="outlined"
-              fullWidth
-              error={touched.started_from && Boolean(errors.started_from)}
-              helperText={touched.started_from && errors.started_from}
-              margin="normal"
-              size="small"
-              InputLabelProps={{ shrink: true }}
-            />
-            <Field
-              as={TextField}
-              name="deadline"
-              type="date"
-              label="Deadline"
-              variant="outlined"
-              fullWidth
-              error={touched.deadline && Boolean(errors.deadline)}
-              helperText={touched.deadline && errors.deadline}
-              margin="normal"
-              size="small"
-              InputLabelProps={{ shrink: true }}
-            />
             <Button type="submit" variant="contained" color="primary">
-            Add Project
+            Add Task Type
             </Button>
           </Form>
           )}
