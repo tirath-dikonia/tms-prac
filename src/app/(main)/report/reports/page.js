@@ -20,7 +20,7 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import AddUser from "@/components/admin/user/AddUser";
-import EditIcon from "@mui/icons-material/Edit";
+import EditIcon from '@mui/icons-material/Edit';
 import PropTypes from "prop-types";
 import {
   CustomTablePagination,
@@ -31,10 +31,6 @@ import {
 import UpdateUser from "@/components/admin/user/UpdateUser";
 import AddProject from "@/components/management/projects/AddProject";
 import UpdateProject from "@/components/management/projects/UpdateProject";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
 }
@@ -122,7 +118,7 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-export default function UserPage() {
+export default function Reports() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [isAddUser, setIsAddUser] = useState(false);
@@ -145,7 +141,6 @@ export default function UserPage() {
   const handleUpdateUserOpen = () => {
     setIsUpdateUser(true);
   };
-  const [selectedDate, setSelectedDate] = useState(null);
   return (
     <>
       <Box
@@ -158,33 +153,14 @@ export default function UserPage() {
         {/* Left side: Search bar */}
         <Box flexGrow={1}>
           <TextField
-            label="Search sheet..."
+            label="Search reports..."
             variant="outlined"
             size="small"
-            sx={{ backgroundColor: "white", mr: "5px" }}
+            sx={{ backgroundColor: "white" }}
             // Add any necessary props for handling search functionality
           />
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DatePicker
-              sx={{ backgroundColor: "white" }}
-              slotProps={{ textField: { size: "small" } }}
-              label="Select a date"
-              value={selectedDate}
-              onChange={(newValue) => {
-                setSelectedDate(newValue);
-              }}
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </LocalizationProvider>
         </Box>
 
-        {/* Right side: Add User button */}
-        {/* <Box ml={2}>
-          <AddProject open={isAddUser} setOpen={setIsAddUser} />
-          <Button variant="contained" color="primary" onClick={handleClickOpen}>
-            Add Project
-          </Button>
-        </Box> */}
       </Box>
       <Box mx="auto" maxWidth="calc(100% - 6rem)" overflow="auto">
         {/* mx="auto" centers the table horizontally */}
@@ -194,8 +170,8 @@ export default function UserPage() {
             <TableHead>
               <StyledTableRow>
                 <StyledTableCell>Name</StyledTableCell>
-                <StyledTableCell>Project</StyledTableCell>
-                <StyledTableCell>Time Spent</StyledTableCell>
+                <StyledTableCell>Time Allocated</StyledTableCell>
+                <StyledTableCell>Time Consumed</StyledTableCell>
                 <StyledTableCell>Started From</StyledTableCell>
                 <StyledTableCell>Deadline</StyledTableCell>
                 <StyledTableCell>Actions</StyledTableCell>
@@ -215,11 +191,9 @@ export default function UserPage() {
                   <StyledTableCell>{row.carbs}</StyledTableCell>
                   <StyledTableCell>{row.protein}</StyledTableCell>
                   <StyledTableCell>
-                    <IconButton
-                      aria-label="add permissions to user"
-                      onClick={handleUpdateUserOpen}
-                    >
-                      <EditIcon color="primary" />
+                    
+                    <IconButton aria-label="add permissions to user" onClick={handleUpdateUserOpen} >
+                      <EditIcon  color="primary" />
                     </IconButton>
                   </StyledTableCell>
                 </StyledTableRow>

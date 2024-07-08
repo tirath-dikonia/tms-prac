@@ -98,6 +98,24 @@ export default function Sidebar({ collapsed, setOpen, open, isSmallScreen }) {
         <CustomCollapse
           collapsed={collapsed}
           listItems={{
+            main: "Report",
+            items: [
+              {
+                label: "Report",
+                href: "/report/add-report",
+                identifier: "add-report",
+              },
+              {
+                label: "All Reports",
+                href: "/report/reports",
+                identifier: "reports",
+              },
+            ],
+          }}
+        />
+        <CustomCollapse
+          collapsed={collapsed}
+          listItems={{
             main: "Admin",
             items: [
               { label: "Users", href: "/admin/users", identifier: "users" },
