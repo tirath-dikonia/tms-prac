@@ -1,33 +1,26 @@
 'use client';
 // pages/add-report-page.js
-// pages/add-report-page.js
-// pages/add-report-page.js
-// pages/add-report-page.js
 
 import React, { useState } from 'react';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import TableContainer from '@mui/material/TableContainer';
-import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
+import {
+  TextField,
+  Button,
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+  IconButton,
+  MenuItem,
+  Grid,
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { styled } from '@mui/system';
 
 const RootContainer = styled('div')({
-  margin: '20px',
-  padding: '20px',
-});
-
-const FormContainer = styled('form')({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '16px',
-  marginBottom: '16px',
+  
 });
 
 const TableWrapper = styled(TableContainer)({
@@ -79,42 +72,74 @@ const AddReportPage = () => {
   return (
     <RootContainer>
       {/* Form to add a new report */}
-      <FormContainer onSubmit={handleSubmit}>
-        <TextField
-          label="Number of hours"
-          type="number"
-          value={hours}
-          onChange={(e) => setHours(e.target.value)}
-          required
-        />
-        <TextField
-          label="Minutes selected"
-          type="number"
-          value={minutes}
-          onChange={(e) => setMinutes(e.target.value)}
-          required
-        />
-        <TextField
-          label="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <TextField
-          label="Description"
-          multiline
-          rows={4}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-        <Button type="submit" variant="contained" color="primary">
-          Save
-        </Button>
-        <Button variant="contained" color="secondary">
-          Send Mail
-        </Button>
-      </FormContainer>
+      <form onSubmit={handleSubmit} style={{backgroundColor: 'white', padding: "2rem"}}>
+        <Grid container spacing={2} alignItems="flex-start">
+          <Grid item xs={12} sm={1}>
+            <TextField
+              select
+              label="Number of hours"
+              value={hours}
+              onChange={(e) => setHours(e.target.value)}
+              required
+              fullWidth
+            >
+              {[...Array(12)].map((_, i) => (
+                <MenuItem key={i} value={i + 1}>
+                  {i + 1}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={12} sm={1}>
+            <TextField
+              select
+              label="Minutes selected"
+              value={minutes}
+              onChange={(e) => setMinutes(e.target.value)}
+              required
+              fullWidth
+            >
+              {[10, 20, 30, 40, 50, 60].map((value) => (
+                <MenuItem key={value} value={value}>
+                  {value}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              label="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={5}>
+            <TextField
+              label="Description"
+              multiline
+              rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={2} container direction="column" spacing={1}>
+            <Grid item>
+              <Button type="submit" variant="contained" color="primary" fullWidth>
+                Save
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button variant="contained" color="secondary" fullWidth>
+                Send Mail
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
+      </form>
 
       {/* Table to display added reports */}
       <TableWrapper component={Paper}>

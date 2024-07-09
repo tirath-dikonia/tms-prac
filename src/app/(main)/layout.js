@@ -9,8 +9,11 @@ import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { useMediaQuery, useTheme } from "@mui/material";
+import { Menu, MenuItem, useMediaQuery, useTheme } from "@mui/material";
 import Sidebar from "../../components/ui/Sidebar";
+import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
+import Link from "next/link";
 
 const drawerWidth = 240;
 
@@ -32,6 +35,7 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
+const settings = [{title: 'Profile', href: '/profile'},{title: 'Account', href: '/account'}, {title: 'Dashboard', href: '/dashboard'}, {title: 'Logout', href: '/login'}];
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
@@ -44,6 +48,24 @@ export default function MainLayout({ children }) {
   const handleCollapseToggle = () => {
     setCollapsed(!collapsed);
   };
+  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
+  };
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   return (
@@ -76,11 +98,41 @@ export default function MainLayout({ children }) {
             >
               TMS
             </Typography>
-            <IconButton color="inherit">
+            <IconButton color="inherit" sx={{ mr: 1 }}>
               <Badge badgeContent={4} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
+            <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <MenuItem key={setting.title} onClick={handleCloseUserMenu}  component={Link} href={setting.href}>
+                  <Typography textAlign="center">{setting.title}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+            
           </Toolbar>
         </AppBar>
         <Sidebar
