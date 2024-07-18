@@ -12,7 +12,7 @@ import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import Paper from "@mui/material/Paper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
@@ -29,6 +29,7 @@ import {
   StyledTableRow,
 } from "@/components/table-theme/TableTheme";
 import UpdateUser from "@/components/admin/user/UpdateUser";
+import { BASE_URL } from "@/config";
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
 }
@@ -121,6 +122,7 @@ export default function UserPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [isAddUser, setIsAddUser] = useState(false);
   const [isUpdateUser, setIsUpdateUser] = useState(false);
+  const [allUsersList, setAllUsersList] = useState([]);
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
@@ -139,6 +141,28 @@ export default function UserPage() {
   const handleUpdateUserOpen = () => {
     setIsUpdateUser(true);
   };
+  useEffect(()=> {
+    async function getAllUsersList (){
+      try{
+        const gotResponse = await fetch(BASE_URL + "/admin/user/get-user-list?" + new URLSearchParams({
+          search_term: "",
+          sort_field:"name",
+          sort_order:"asc",
+          per_page:rowsPerPage,
+          page_number:page+1,
+      }).toString())
+      const dataGot = await gotResponse.json();
+      // console.log(">>> users data got : ", dataGot)
+      if(dataGot.success){
+       setAllUsersList( dataGot.data.users)
+       
+      }
+      }catch(err){
+        console.log(">>>error users data : ", err)
+      }
+    }
+    getAllUsersList();
+  }, [])
   return (
     <>
       <Box
@@ -161,7 +185,7 @@ export default function UserPage() {
 
         {/* Right side: Add User button */}
         <Box ml={2}>
-          <AddUser open={isAddUser} setOpen={setIsAddUser} />
+          {isAddUser && <AddUser open={isAddUser} setOpen={setIsAddUser} />}
           <Button variant="contained" color="primary" onClick={handleClickOpen}>
             Add User
           </Button>
@@ -178,23 +202,23 @@ export default function UserPage() {
                 <StyledTableCell>Email</StyledTableCell>
                 <StyledTableCell>User Type</StyledTableCell>
                 <StyledTableCell>Role</StyledTableCell>
-                <StyledTableCell>Username</StyledTableCell>
+                <StyledTableCell>Status</StyledTableCell>
                 <StyledTableCell>Actions</StyledTableCell>
               </StyledTableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {allUsersList.map((row) => (
                 <StyledTableRow
-                  key={row.name}
+                  key={row._id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <StyledTableCell component="th" scope="row">
                     {row.name}
                   </StyledTableCell>
-                  <StyledTableCell>{row.calories}</StyledTableCell>
-                  <StyledTableCell>{row.fat}</StyledTableCell>
-                  <StyledTableCell>{row.carbs}</StyledTableCell>
-                  <StyledTableCell>{row.protein}</StyledTableCell>
+                  <StyledTableCell>{row.email}</StyledTableCell>
+                  <StyledTableCell>{row.user_type}</StyledTableCell>
+                  <StyledTableCell>{row?.role?.role}</StyledTableCell>
+                  <StyledTableCell>{row.status}</StyledTableCell>
                   <StyledTableCell>
                     
                     <IconButton aria-label="add permissions to user" onClick={handleUpdateUserOpen} >
