@@ -15,9 +15,12 @@ import {
   Select,
   Grid,
   Box,
+  OutlinedInput,
+  InputAdornment,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const roles = [
   { value: "management", label: "Management" },
@@ -25,13 +28,14 @@ const roles = [
 ];
 const user_type = ["Admin", "Employee", "Manager"];
 const validationSchema = Yup.object({
-  name: Yup.string().required("Fullname is required"),
+  name: Yup.string().min(2).required("Name is required"),
   email: Yup.string()
     .email("Invalid email address")
     .required("Email is required"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
+  mobile: Yup.number().required("Email is required"),
+  // password: Yup.string()
+  //   .required("Password is required")
+  //   .min(6, "Password must be at least 6 characters"),
   role: Yup.string().required("Role is required"),
   user_type: Yup.string().required("User Type is required"),
 });
@@ -39,7 +43,7 @@ const validationSchema = Yup.object({
 const initialValues = {
   name: "",
   email: "",
-  password: "",
+  mobile: "",
   role: "",
   user_type: "",
 };
@@ -54,12 +58,19 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 export default function AddUser({ open, setOpen }) {
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
   const formik = useFormik({
     initialValues,
     validationSchema,
-    onSubmit : (values, {resetForm, setSubmitting}) => {
+    onSubmit: (values, { resetForm, setSubmitting }) => {
       console.log(">> Values got : ", values);
-    }
+    },
   });
   const handleClose = () => {
     setOpen(false);
@@ -94,16 +105,110 @@ export default function AddUser({ open, setOpen }) {
           <Grid container justifyContent="center">
             <Grid item xs={6}>
               <Box>
-                <TextField  name="name"
-                      label="Full Name"
-                      variant="outlined"
-                      fullWidth
-                      margin="normal"
-                      size="small"
-                      {...formik.getFieldProps('name')}
-                      error={formik.touched.name && Boolean(formik.errors.name)}
-                      helperText={formik.touched.name && formik.errors.name}
-                      />
+                <TextField
+                  name="name"
+                  label="Full Name"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: 1 }}
+                  size="small"
+                  {...formik.getFieldProps("name")}
+                  error={formik.touched.name && Boolean(formik.errors.name)}
+                  helperText={formik.touched.name && formik.errors.name}
+                />
+                <TextField
+                  name="email"
+                  label="Email"
+                  sx={{ marginBottom: 1 }}
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  {...formik.getFieldProps("email")}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email}
+                />
+                <TextField
+                  name="mobile"
+                  label="Mobile"
+                  sx={{ marginBottom: 1 }}
+                  variant="outlined"
+                  fullWidth
+                  size="small"
+                  {...formik.getFieldProps("mobile")}
+                  error={formik.touched.mobile && Boolean(formik.errors.mobile)}
+                  helperText={formik.touched.mobile && formik.errors.mobile}
+                />
+                <FormControl fullWidth>
+                <InputLabel id="user_type_label">User Type</InputLabel>
+                <Select
+                  id="user_type"
+                  fullWidth
+                  sx={{ marginBottom: 1 }}
+                  labelId="user_type_label"
+                  variant="outlined"
+                  size="small"
+                  {...formik.getFieldProps("user_type")}
+                  error={
+                    formik.touched.user_type && Boolean(formik.errors.user_type)
+                  }
+                  helperText={
+                    formik.touched.user_type && formik.errors.user_type
+                  }
+                  label="User Type"
+                >
+                  <MenuItem value="">Select User Type</MenuItem>
+                  <MenuItem value="Admin">Admin</MenuItem>
+                  <MenuItem value="Employee">Employee</MenuItem>
+                  <MenuItem value="Manager">Manager</MenuItem>
+                </Select>
+                </FormControl>
+                <FormControl fullWidth>
+                <InputLabel id="role_label">Role</InputLabel>
+                <Select
+                  id="role"
+                  fullWidth
+                  sx={{ marginBottom: 1 }}
+                  labelId="role_label"
+                  variant="outlined"
+                  size="small"
+                  {...formik.getFieldProps("role")}
+                  error={
+                    formik.touched.role && Boolean(formik.errors.role)
+                  }
+                  helperText={
+                    formik.touched.role && formik.errors.role
+                  }
+                  label="Role"
+                >
+                  <MenuItem value="">Select Role</MenuItem>
+                  <MenuItem value="Admin">Developer</MenuItem>
+                  <MenuItem value="Employee">Manger</MenuItem>
+                  <MenuItem value="Manager">Admin</MenuItem>
+                </Select>
+                </FormControl>
+                <Button variant="contained" color="primary">
+                  Add User
+                </Button>
+                {/* <FormControl sx={{ width: '100%' }} variant="outlined" size="small"> */}
+                {/* <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+          <OutlinedInput
+            id="outlined-adornment-password"
+            type={showPassword ? 'text' : 'password'}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Password"
+          /> */}
+                {/* </FormControl> */}
               </Box>
               {/* <Formik
                 initialValues={initialValues}
