@@ -19,6 +19,7 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { BASE_URL } from "@/config";
+import toast from "react-hot-toast";
 
 const validationSchema = Yup.object({
   name: Yup.string().min(2).required("Name is required"),
@@ -50,16 +51,39 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export default function AddUser({ open, setOpen }) {
   const [roles, setRoleDropdown] = useState([]);
   const [userTypes, setUserTypes] = useState([]);
-  const formik = useFormik({
-    initialValues,
-    validationSchema,
-    onSubmit: (values, { resetForm, setSubmitting }) => {
-      console.log(">> Values got : ", values);
-    },
-  });
   const handleClose = () => {
     setOpen(false);
   };
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: async(values, { resetForm, setSubmitting }) => {
+      console.log(">> Values got : ", values);
+     try{
+      const userRes = await fetch(BASE_URL + "/admin/user/add-user", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+      })
+      const gotRes = await userRes.json();
+      
+      if(gotRes.success){
+        console.log(">> ADDED USER : ", gotRes)
+        toast.success("User added successfully")
+        handleClose()
+      }else if(gotRes.message){
+        toast.success(gotRes.message)
+      }
+      
+     } catch (err){
+      toast.error("Something went wrong while adding user")
+     }
+      // if(getRes.success)
+    },
+  });
+  
   useEffect(()=> {
     async function getRoleList (){
       try{
