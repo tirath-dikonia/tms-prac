@@ -1,4 +1,4 @@
-import * as React from "react";
+import { Fragment, useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
@@ -15,27 +15,17 @@ import {
   Select,
   Grid,
   Box,
-  OutlinedInput,
-  InputAdornment,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { BASE_URL } from "@/config";
 
-const roles = [
-  { value: "management", label: "Management" },
-  { value: "developer", label: "Developer" },
-];
-const user_type = ["Admin", "Employee", "Manager"];
 const validationSchema = Yup.object({
   name: Yup.string().min(2).required("Name is required"),
   email: Yup.string()
     .email("Invalid email address")
     .required("Email is required"),
   mobile: Yup.number().required("Email is required"),
-  // password: Yup.string()
-  //   .required("Password is required")
-  //   .min(6, "Password must be at least 6 characters"),
   role: Yup.string().required("Role is required"),
   user_type: Yup.string().required("User Type is required"),
 });
@@ -58,13 +48,8 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 export default function AddUser({ open, setOpen }) {
-  const [showPassword, setShowPassword] = React.useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
+  const [roles, setRoleDropdown] = useState([]);
+  const [userTypes, setUserTypes] = useState([]);
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -75,11 +60,27 @@ export default function AddUser({ open, setOpen }) {
   const handleClose = () => {
     setOpen(false);
   };
-  const handleSubmit = (values) => {
-    console.log(values); // Handle submit logic here
-  };
+  useEffect(()=> {
+    async function getRoleList (){
+      try{
+        const gotRolesRes = await fetch(BASE_URL + "/admin/role/get-role-dropdown")
+      const gotRoles = await gotRolesRes.json();
+      const gotUserTypesRes = await fetch(BASE_URL + "/admin/user/get-user-type-dropdown")
+      const gotUserType = await gotUserTypesRes.json();
+      if(gotRoles.success){
+        setRoleDropdown( gotRoles.data);
+      }
+      if(gotUserType.success){
+        setUserTypes(gotUserType.data)
+      }
+      }catch(err){
+        console.log(">>>error roles data : ", err)
+      }
+    }
+    getRoleList();
+  }, [])
   return (
-    <React.Fragment>
+    <Fragment>
       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
@@ -157,9 +158,7 @@ export default function AddUser({ open, setOpen }) {
                   label="User Type"
                 >
                   <MenuItem value="">Select User Type</MenuItem>
-                  <MenuItem value="Admin">Admin</MenuItem>
-                  <MenuItem value="Employee">Employee</MenuItem>
-                  <MenuItem value="Manager">Manager</MenuItem>
+                  {userTypes.map((uT, i) => <MenuItem key={i} value={uT}>{uT}</MenuItem>)}
                 </Select>
                 </FormControl>
                 <FormControl fullWidth>
@@ -181,12 +180,10 @@ export default function AddUser({ open, setOpen }) {
                   label="Role"
                 >
                   <MenuItem value="">Select Role</MenuItem>
-                  <MenuItem value="Admin">Developer</MenuItem>
-                  <MenuItem value="Employee">Manger</MenuItem>
-                  <MenuItem value="Manager">Admin</MenuItem>
+                  {roles.map(r => <MenuItem key={r._id} value={r._id}>{r.role}</MenuItem>)}
                 </Select>
                 </FormControl>
-                <Button variant="contained" color="primary">
+                <Button variant="contained" color="primary" onClick={()=> {formik.submitForm()}}>
                   Add User
                 </Button>
                 {/* <FormControl sx={{ width: '100%' }} variant="outlined" size="small"> */}
@@ -309,6 +306,6 @@ export default function AddUser({ open, setOpen }) {
           </Grid>
         </DialogContent>
       </BootstrapDialog>
-    </React.Fragment>
+    </Fragment>
   );
 }
