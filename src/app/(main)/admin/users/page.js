@@ -123,6 +123,8 @@ export default function UserPage() {
   const [isAddUser, setIsAddUser] = useState(false);
   const [isUpdateUser, setIsUpdateUser] = useState(false);
   const [allUsersList, setAllUsersList] = useState([]);
+  const [allUsersCount, setAllUsersCount] = useState(0);
+  const [userData, setUserData] = useState();
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
@@ -142,27 +144,34 @@ export default function UserPage() {
     setIsUpdateUser(true);
   };
   useEffect(()=> {
+    if(!userData) return; 
+    setPage(userData.data.page_number-1)
+    setRowsPerPage(userData.data.per_page)
+   setAllUsersList( userData.data.users)
+   setAllUsersCount(userData.data.total_users)
+  }, [userData])
+  useEffect(()=> {
     async function getAllUsersList (){
       try{
         const gotResponse = await fetch(BASE_URL + "/admin/user/get-user-list?" + new URLSearchParams({
           search_term: "",
-          sort_field:"name",
-          sort_order:"asc",
+          sort_field:"createdAt",
+          sort_order:"desc",
           per_page:rowsPerPage,
           page_number:page+1,
       }).toString())
       const dataGot = await gotResponse.json();
+     
       // console.log(">>> users data got : ", dataGot)
       if(dataGot.success){
-       setAllUsersList( dataGot.data.users)
-       
+        setUserData(dataGot);
       }
       }catch(err){
         console.log(">>>error users data : ", err)
       }
     }
     getAllUsersList();
-  }, [])
+  }, [rowsPerPage, page])
   return (
     <>
       <Box
@@ -234,7 +243,7 @@ export default function UserPage() {
                 <CustomTablePagination
                   rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
                   colSpan={6}
-                  count={rows.length}
+                  count={allUsersCount}
                   rowsPerPage={rowsPerPage}
                   page={page}
                   slotProps={{
