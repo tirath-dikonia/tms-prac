@@ -5,7 +5,7 @@ import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import Paper from "@mui/material/Paper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
@@ -22,6 +22,7 @@ import {
 } from "@/components/table-theme/TableTheme";
 import { AddCircle } from "@mui/icons-material";
 import AddPermissions from "@/components/admin/role/AddPermissions";
+import { BASE_URL } from "@/config";
 function createData(name, calories) {
   return { name, calories };
 }
@@ -103,11 +104,14 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-export default function UserPage() {
+export default function RolePage() {
+  const [isAddRole, setIsAddRole] = useState(false);
+  const [isAddPermissions, setIsAddPermissions] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [isAddUser, setIsAddUser] = useState(false);
-  const [isAddPermissions, setIsAddPermissions] = useState(false);
+  const [allRoleList, setAllRolesList] = useState([]);
+  const [allRoleCount, setAllRoleCount] = useState(0);
+  const [roleData, setRoleData] = useState();
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
@@ -121,11 +125,41 @@ export default function UserPage() {
     setPage(0);
   };
   const handleClickOpen = () => {
-    setIsAddUser(true);
+    setIsAddRole(true);
   };
   const handlePermissionOpen = () => {
     setIsAddPermissions(true);
   };
+  useEffect(()=> {
+    console.log(">>> ROLE DATA GOT : ", roleData)
+    if(!roleData) return; 
+    setPage(roleData.data.page_number-1)
+    setRowsPerPage(roleData.data.per_page)
+   setAllRolesList( roleData.data.roles)
+   setAllRoleCount(roleData.data.total_roles)
+  }, [roleData])
+  useEffect(()=> {
+    async function getAllRolesList (){
+      try{
+        const gotResponse = await fetch(BASE_URL + "/admin/role/get-role-list?" + new URLSearchParams({
+          search_term: "",
+          sort_field:"createdAt",
+          sort_order:"desc",
+          per_page:rowsPerPage,
+          page_number:page+1,
+      }).toString())
+      const dataGot = await gotResponse.json();
+     
+      // console.log(">>> users data got : ", dataGot)
+      if(dataGot.success){
+        setRoleData(dataGot);
+      }
+      }catch(err){
+        console.log(">>>error users data : ", err)
+      }
+    }
+    getAllRolesList();
+  }, [rowsPerPage, page])
   return (
     <>
       <Box
@@ -148,7 +182,7 @@ export default function UserPage() {
 
         {/* Right side: Add User button */}
         <Box ml={2}>
-          <AddRole open={isAddUser} setOpen={setIsAddUser} />
+          {isAddRole && <AddRole open={isAddRole} setOpen={setIsAddRole} />}
           <Button variant="contained" color="primary" onClick={handleClickOpen}>
             Add Role
           </Button>
@@ -166,13 +200,13 @@ export default function UserPage() {
               </StyledTableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {allRoleList.map((row) => (
                 <StyledTableRow
-                  key={row.name}
+                  key={row.role}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <StyledTableCell component="th" scope="row">
-                    {row.name}
+                    {row.role}
                   </StyledTableCell>
                   <StyledTableCell>
                     

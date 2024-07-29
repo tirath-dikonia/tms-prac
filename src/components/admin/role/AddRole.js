@@ -16,8 +16,10 @@ import {
   Select,
   Grid,
 } from "@mui/material";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form, Field, useFormik } from "formik";
 import * as Yup from "yup";
+import { BASE_URL } from "@/config";
+import toast from "react-hot-toast";
 
 const roles = [
   { value: "management", label: "Management" },
@@ -25,16 +27,10 @@ const roles = [
 ];
 
 const validationSchema = Yup.object({
-  fullname: Yup.string().required('Fullname is required'),
-  email: Yup.string().email('Invalid email address').required('Email is required'),
-  password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
   role: Yup.string().required('Role is required'),
 });
 
 const initialValues = {
-  fullname: '',
-  email: '',
-  password: '',
   role: '',
 };
 
@@ -55,6 +51,38 @@ export default function AddRole({ open, setOpen }) {
   const handleSubmit = (values) => {
     console.log(values); // Handle submit logic here
   };
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: async(values, { resetForm, setSubmitting }) => {
+      console.log(">> Values got : ", values);
+    //  try{
+    //   const userRes = await fetch(BASE_URL + "/admin/user/add-user", {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify(values)
+    //   })
+    //   const gotRes = await userRes.json();
+      
+    //   if(gotRes.success){
+    //     console.log(">> ADDED USER : ", gotRes)
+    //     toast.success("User added successfully")
+    //     handleClose()
+    //   }else if(gotRes.message){
+    //     toast.success(gotRes.message)
+    //   }
+      
+    //  } catch (err){
+    //   toast.error("Something went wrong while adding user")
+    //  }
+      // if(getRes.success)
+    },
+  });
+
+
   return (
     <React.Fragment>
       <BootstrapDialog
@@ -87,19 +115,19 @@ export default function AddRole({ open, setOpen }) {
         >
           {({ errors, touched }) => (
             <Form>
-              <Field
-                as={TextField}
-                name="role"
-                label="Role"
-                variant="outlined"
-                fullWidth
-                error={touched.fullname && Boolean(errors.fullname)}
-                helperText={touched.fullname && errors.fullname}
-                margin="normal"
-                size="small" 
-              />
+             <TextField
+                  name="role"
+                  label="Role"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: 1 }}
+                  size="small"
+                  {...formik.getFieldProps("role")}
+                  error={formik.touched.role && Boolean(formik.errors.role)}
+                  helperText={formik.touched.role && formik.errors.role}
+                />
               
-              <Button type="submit" variant="contained" color="primary">
+              <Button type="submit" variant="contained" color="primary" onClick={()=> {formik.submitForm()}}>
                 Add Role
               </Button>
             </Form>
