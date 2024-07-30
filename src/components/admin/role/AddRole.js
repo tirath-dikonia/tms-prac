@@ -57,28 +57,27 @@ export default function AddRole({ open, setOpen }) {
     validationSchema,
     onSubmit: async(values, { resetForm, setSubmitting }) => {
       console.log(">> Values got : ", values);
-    //  try{
-    //   const userRes = await fetch(BASE_URL + "/admin/user/add-user", {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify(values)
-    //   })
-    //   const gotRes = await userRes.json();
+     try{
+      const roleRes = await fetch(BASE_URL + "/admin/role/add-role", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({...values, desc: ""})
+      })
+      const gotRes = await roleRes.json();
       
-    //   if(gotRes.success){
-    //     console.log(">> ADDED USER : ", gotRes)
-    //     toast.success("User added successfully")
-    //     handleClose()
-    //   }else if(gotRes.message){
-    //     toast.success(gotRes.message)
-    //   }
+      if(gotRes.success){
+        console.log(">> ADDED USER : ", gotRes)
+        toast.success("Role added successfully")
+        handleClose()
+      }else if(gotRes.message){
+        toast.success(gotRes.message)
+      }
       
-    //  } catch (err){
-    //   toast.error("Something went wrong while adding user")
-    //  }
-      // if(getRes.success)
+     } catch (err){
+      toast.error("Something went wrong while adding user")
+     }
     },
   });
 

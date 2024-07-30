@@ -5,7 +5,7 @@ import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import Paper from "@mui/material/Paper";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
@@ -130,15 +130,7 @@ export default function RolePage() {
   const handlePermissionOpen = () => {
     setIsAddPermissions(true);
   };
-  useEffect(()=> {
-    console.log(">>> ROLE DATA GOT : ", roleData)
-    if(!roleData) return; 
-    setPage(roleData.data.page_number-1)
-    setRowsPerPage(roleData.data.per_page)
-   setAllRolesList( roleData.data.roles)
-   setAllRoleCount(roleData.data.total_roles)
-  }, [roleData])
-  useEffect(()=> {
+  const getAllRoles = useCallback(()=> {
     async function getAllRolesList (){
       try{
         const gotResponse = await fetch(BASE_URL + "/admin/role/get-role-list?" + new URLSearchParams({
@@ -159,7 +151,20 @@ export default function RolePage() {
       }
     }
     getAllRolesList();
-  }, [rowsPerPage, page])
+  },[page, rowsPerPage])
+  useEffect(() => {
+    if(isAddRole) return;
+    getAllRoles();
+  }, [isAddRole])
+  useEffect(()=> {
+    console.log(">>> ROLE DATA GOT : ", roleData)
+    if(!roleData) return; 
+    setPage(roleData.data.page_number-1)
+    setRowsPerPage(roleData.data.per_page)
+   setAllRolesList( roleData.data.roles)
+   setAllRoleCount(roleData.data.total_roles)
+  }, [roleData])
+  useEffect(getAllRoles, [rowsPerPage, page])
   return (
     <>
       <Box
@@ -223,7 +228,7 @@ export default function RolePage() {
                 <CustomTablePagination
                   rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
                   colSpan={3}
-                  count={rows.length}
+                  count={allRoleCount}
                   rowsPerPage={rowsPerPage}
                   page={page}
                   slotProps={{
