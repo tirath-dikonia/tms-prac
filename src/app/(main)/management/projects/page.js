@@ -12,7 +12,7 @@ import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import Paper from "@mui/material/Paper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
@@ -31,6 +31,8 @@ import {
 import UpdateUser from "@/components/admin/user/UpdateUser";
 import AddProject from "@/components/management/projects/AddProject";
 import UpdateProject from "@/components/management/projects/UpdateProject";
+import { BASE_URL } from "@/config";
+import { format, parseISO } from "date-fns";
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
 }
@@ -118,11 +120,14 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-export default function UserPage() {
+export default function ProjectPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [isAddUser, setIsAddUser] = useState(false);
-  const [isUpdateUser, setIsUpdateUser] = useState(false);
+  const [isAddItemModal, setIsAddItemModal] = useState(false);
+  const [isUpdateScreen, setIsUpdateScreen] = useState(false);
+   const [allListItems, setAllListItems] = useState([]);
+  const [allListCount, setAllUsersCount] = useState(0);
+  const [listDataGot, setListData] = useState();
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
@@ -136,11 +141,44 @@ export default function UserPage() {
     setPage(0);
   };
   const handleClickOpen = () => {
-    setIsAddUser(true);
+    setIsAddItemModal(true);
   };
   const handleUpdateUserOpen = () => {
-    setIsUpdateUser(true);
+    setIsUpdateScreen(true);
   };
+
+
+  useEffect(()=> {
+    if(!listDataGot) return; 
+    setPage(listDataGot.data.page_number-1)
+    setRowsPerPage(listDataGot.data.per_page)
+   setAllListItems( listDataGot.data.items)
+   setAllUsersCount(listDataGot.data.total_items)
+  }, [listDataGot])
+
+  useEffect(()=> {
+    async function getAllItemsList (){
+      try{
+        const gotResponse = await fetch(BASE_URL + "/admin/project/list?" + new URLSearchParams({
+          search_term: "",
+          sort_field:"createdAt",
+          sort_order:"desc",
+          per_page:rowsPerPage,
+          page_number:page+1,
+      }).toString())
+      const dataGot = await gotResponse.json();
+     
+      // console.log(">>> users data got : ", dataGot)
+      if(dataGot.success){
+        setListData(dataGot);
+      }
+      }catch(err){
+        console.log(">>>error items data : ", err)
+      }
+    }
+    getAllItemsList();
+  }, [rowsPerPage, page])
+
   return (
     <>
       <Box
@@ -149,7 +187,7 @@ export default function UserPage() {
         justifyContent="space-between"
         p={2}
       >
-        <UpdateProject open={isUpdateUser} setOpen={setIsUpdateUser} />
+        <UpdateProject open={isUpdateScreen} setOpen={setIsUpdateScreen} />
         {/* Left side: Search bar */}
         <Box flexGrow={1}>
           <TextField
@@ -163,7 +201,7 @@ export default function UserPage() {
 
         {/* Right side: Add User button */}
         <Box ml={2}>
-          {isAddUser && <AddProject open={isAddUser} setOpen={setIsAddUser} />}
+          {isAddItemModal && <AddProject open={isAddItemModal} setOpen={setIsAddItemModal} />}
           <Button variant="contained" color="primary" onClick={handleClickOpen}>
             Add Project
           </Button>
@@ -176,6 +214,7 @@ export default function UserPage() {
           <Table sx={{ minWidth: 20 }} aria-label="simple table">
             <TableHead>
               <StyledTableRow>
+              <StyledTableCell>Sr.No</StyledTableCell>
                 <StyledTableCell>Name</StyledTableCell>
                 <StyledTableCell>Time Allocated</StyledTableCell>
                 <StyledTableCell>Time Consumed</StyledTableCell>
@@ -185,18 +224,21 @@ export default function UserPage() {
               </StyledTableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+            {allListItems && allListItems.map((row, i) => (
                 <StyledTableRow
                   key={row.name}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <StyledTableCell component="th" scope="row">
+                    {i+(page* rowsPerPage)+1}
+                  </StyledTableCell>
+                  <StyledTableCell component="th" scope="row">
                     {row.name}
                   </StyledTableCell>
-                  <StyledTableCell>{row.calories}</StyledTableCell>
-                  <StyledTableCell>{row.fat}</StyledTableCell>
-                  <StyledTableCell>{row.carbs}</StyledTableCell>
-                  <StyledTableCell>{row.protein}</StyledTableCell>
+                  <StyledTableCell>{row.desc}</StyledTableCell>
+                  <StyledTableCell>{row.hours_allocated}</StyledTableCell>
+                  <StyledTableCell>{format(parseISO(row.start_date), "dd MMM, yy")}</StyledTableCell>
+                  <StyledTableCell>{format(parseISO(row.deadline), "dd MMM, yy")}</StyledTableCell>
                   <StyledTableCell>
                     
                     <IconButton aria-label="add permissions to user" onClick={handleUpdateUserOpen} >
@@ -211,7 +253,7 @@ export default function UserPage() {
               <StyledTableRow>
                 <CustomTablePagination
                   rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                  colSpan={6}
+                  colSpan={7}
                   count={rows.length}
                   rowsPerPage={rowsPerPage}
                   page={page}

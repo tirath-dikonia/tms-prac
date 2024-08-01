@@ -13,6 +13,8 @@ import * as yup from "yup";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Fragment, useEffect } from "react";
+import { BASE_URL } from "@/config";
+import toast from "react-hot-toast";
 
 const validationSchema = yup.object().shape({
   name: yup.string().required("Project name is required"),
@@ -43,7 +45,7 @@ const validationSchema = yup.object().shape({
 const initialValues = {
   name: "",
   desc: "",
-  hours_allocated: null,
+  hours_allocated: "",
   start_date: "",
   deadline: "",
 };
@@ -69,27 +71,27 @@ export default function AddProject({ open, setOpen }) {
     initialValues,
     validationSchema,
     onSubmit: async (values, { resetForm, setSubmitting }) => {
-      console.log(">> Values got : ", values);
-      // try {
-      //   const resGot = await fetch(BASE_URL + "/admin/project/add", {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify(values),
-      //   });
-      //   const gotRes = await resGot.json();
+      // console.log(">> Values got : ", values);
+      try {
+        const resGot = await fetch(BASE_URL + "/admin/project/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        });
+        const gotRes = await resGot.json();
 
-      //   if (gotRes.success) {
-      //     console.log(">> ADDED Task : ", gotRes);
-      //     toast.success("Task added successfully");
-      //     handleClose();
-      //   } else if (gotRes.message) {
-      //     toast.success(gotRes.message);
-      //   }
-      // } catch (err) {
-      //   toast.error("Something went wrong while adding user");
-      // }
+        if (gotRes.success) {
+          // console.log(">> ADDED project : ", gotRes);
+          toast.success("Project added successfully");
+          handleClose();
+        } else if (gotRes.message) {
+          toast.success(gotRes.message);
+        }
+      } catch (err) {
+        toast.error("Something went wrong while adding project");
+      }
     },
   });
 
