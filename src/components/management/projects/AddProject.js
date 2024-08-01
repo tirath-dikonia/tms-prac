@@ -71,7 +71,6 @@ export default function AddProject({ open, setOpen }) {
     initialValues,
     validationSchema,
     onSubmit: async (values, { resetForm, setSubmitting }) => {
-      // console.log(">> Values got : ", values);
       try {
         const resGot = await fetch(BASE_URL + "/admin/project/add", {
           method: "POST",

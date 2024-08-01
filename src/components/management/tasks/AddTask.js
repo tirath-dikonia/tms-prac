@@ -51,7 +51,6 @@ export default function AddTask({ open, setOpen }) {
     initialValues,
     validationSchema,
     onSubmit: async (values, { resetForm, setSubmitting }) => {
-      console.log(">> Values got : ", values);
       try {
         const resGot = await fetch(BASE_URL + "/admin/task-type/add-task-type", {
           method: "POST",

@@ -216,6 +216,7 @@ export default function ProjectPage() {
               <StyledTableRow>
               <StyledTableCell>Sr.No</StyledTableCell>
                 <StyledTableCell>Name</StyledTableCell>
+                <StyledTableCell>Desc</StyledTableCell>
                 <StyledTableCell>Time Allocated</StyledTableCell>
                 <StyledTableCell>Time Consumed</StyledTableCell>
                 <StyledTableCell>Started From</StyledTableCell>
@@ -237,6 +238,7 @@ export default function ProjectPage() {
                   </StyledTableCell>
                   <StyledTableCell>{row.desc}</StyledTableCell>
                   <StyledTableCell>{row.hours_allocated}</StyledTableCell>
+                  <StyledTableCell>{row.time_spent}</StyledTableCell>
                   <StyledTableCell>{format(parseISO(row.start_date), "dd MMM, yy")}</StyledTableCell>
                   <StyledTableCell>{format(parseISO(row.deadline), "dd MMM, yy")}</StyledTableCell>
                   <StyledTableCell>
@@ -253,7 +255,7 @@ export default function ProjectPage() {
               <StyledTableRow>
                 <CustomTablePagination
                   rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                  colSpan={7}
+                  colSpan={8}
                   count={rows.length}
                   rowsPerPage={rowsPerPage}
                   page={page}

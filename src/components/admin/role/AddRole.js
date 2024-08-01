@@ -56,7 +56,6 @@ export default function AddRole({ open, setOpen }) {
     initialValues,
     validationSchema,
     onSubmit: async(values, { resetForm, setSubmitting }) => {
-      console.log(">> Values got : ", values);
      try{
       const roleRes = await fetch(BASE_URL + "/admin/role/add-role", {
         method: 'POST',

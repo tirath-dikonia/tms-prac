@@ -157,7 +157,6 @@ export default function RolePage() {
     getAllRoles();
   }, [isAddRole])
   useEffect(()=> {
-    console.log(">>> ROLE DATA GOT : ", roleData)
     if(!roleData) return; 
     setPage(roleData.data.page_number-1)
     setRowsPerPage(roleData.data.per_page)

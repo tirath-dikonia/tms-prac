@@ -58,7 +58,6 @@ export default function AddUser({ open, setOpen }) {
     initialValues,
     validationSchema,
     onSubmit: async(values, { resetForm, setSubmitting }) => {
-      console.log(">> Values got : ", values);
      try{
       const userRes = await fetch(BASE_URL + "/admin/user/add-user", {
         method: 'POST',
