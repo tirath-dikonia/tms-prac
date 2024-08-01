@@ -1,4 +1,3 @@
-import * as React from "react";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
@@ -6,48 +5,48 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { format, parse } from "date-fns";
 
-
-import {
-  TextField,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
-  Grid,
-} from "@mui/material";
-import { Formik, Form, Field } from "formik";
+import { TextField, Grid } from "@mui/material";
+import { useFormik } from "formik";
 import * as yup from "yup";
-
-const roles = [
-  { value: "management", label: "Management" },
-  { value: "developer", label: "Developer" },
-];
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { Fragment, useEffect } from "react";
 
 const validationSchema = yup.object().shape({
-  project_name: yup.string().required('Project name is required'),
-  description: yup.string().required('Description is required'),
-  sec_allocated: yup.number()
-    .integer('Seconds allocated must be an integer')
-    .min(0, 'Seconds allocated must be a positive integer')
-    .required('Seconds allocated is required'),
-  started_from: yup.date()
-    .transform((value, originalValue) => originalValue.split('T')[0])
-    .required('Start date is required')
-    .typeError('Invalid date format, expected YYYY-MM-DD'),
-  deadline: yup.date()
-    .transform((value, originalValue) => originalValue.split('T')[0])
-    .required('Deadline date is required')
-    .typeError('Invalid date format, expected YYYY-MM-DD'),
+  name: yup.string().required("Project name is required"),
+  desc: yup.string().required("Description is required"),
+  hours_allocated: yup
+    .number()
+    .integer("Hours allocated must be an integer")
+    .min(1, "Hours allocated must be greater than 1")
+    .required("Hours allocated is required"),
+  start_date: yup
+    .date()
+    // .transform((value, originalValue) => originalValue.split("T")[0])
+    .required("Start is required")
+    .typeError("Invalid date format, expected YYYY-MM-DD")
+    .test("is-before-deadline", "Start date must be before deadline", function(value) {
+      const { deadline } = this.parent;
+      return !deadline || value <= deadline;
+    }),
+  deadline: yup
+    .date()
+    .required("Deadline is required")
+    .typeError("Invalid date format, expected YYYY-MM-DD")
+    .test("is-after-start_date", "Deadline must be after start date", function(value) {
+      const { start_date } = this.parent;
+      return !start_date || value >= start_date;
+    }),
 });
 const initialValues = {
-  project_name: '',
-  description: '',
-  sec_allocated: 0,
-  started_from: '',
-  deadline: '',
+  name: "",
+  desc: "",
+  hours_allocated: null,
+  start_date: "",
+  deadline: "",
 };
-
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -65,8 +64,37 @@ export default function AddProject({ open, setOpen }) {
   const handleSubmit = (values) => {
     console.log(values); // Handle submit logic here
   };
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: async (values, { resetForm, setSubmitting }) => {
+      console.log(">> Values got : ", values);
+      // try {
+      //   const resGot = await fetch(BASE_URL + "/admin/project/add", {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify(values),
+      //   });
+      //   const gotRes = await resGot.json();
+
+      //   if (gotRes.success) {
+      //     console.log(">> ADDED Task : ", gotRes);
+      //     toast.success("Task added successfully");
+      //     handleClose();
+      //   } else if (gotRes.message) {
+      //     toast.success(gotRes.message);
+      //   }
+      // } catch (err) {
+      //   toast.error("Something went wrong while adding user");
+      // }
+    },
+  });
+
   return (
-    <React.Fragment>
+    <Fragment>
       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
@@ -88,86 +116,136 @@ export default function AddProject({ open, setOpen }) {
           <CloseIcon />
         </IconButton>
         <DialogContent dividers>
-        <Grid container justifyContent="center">
-      <Grid item xs={6}>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ errors, touched }) => (
-            <Form>
-            <Field
-              as={TextField}
-              name="project_name"
-              label="Project Name"
-              variant="outlined"
-              fullWidth
-              error={touched.project_name && Boolean(errors.project_name)}
-              helperText={touched.project_name && errors.project_name}
-              margin="normal"
-              size="small"
-            />
-            <Field
-              as={TextField}
-              name="description"
-              label="Description"
-              variant="outlined"
-              fullWidth
-              error={touched.description && Boolean(errors.description)}
-              helperText={touched.description && errors.description}
-              margin="normal"
-              size="small"
-            />
-            <Field
-              as={TextField}
-              name="sec_allocated"
-              type="number"
-              label="Seconds Allocated"
-              variant="outlined"
-              fullWidth
-              error={touched.sec_allocated && Boolean(errors.sec_allocated)}
-              helperText={touched.sec_allocated && errors.sec_allocated}
-              margin="normal"
-              size="small"
-            />
-            <Field
-              as={TextField}
-              name="started_from"
-              type="date"
-              label="Started From"
-              variant="outlined"
-              fullWidth
-              error={touched.started_from && Boolean(errors.started_from)}
-              helperText={touched.started_from && errors.started_from}
-              margin="normal"
-              size="small"
-              InputLabelProps={{ shrink: true }}
-            />
-            <Field
-              as={TextField}
-              name="deadline"
-              type="date"
-              label="Deadline"
-              variant="outlined"
-              fullWidth
-              error={touched.deadline && Boolean(errors.deadline)}
-              helperText={touched.deadline && errors.deadline}
-              margin="normal"
-              size="small"
-              InputLabelProps={{ shrink: true }}
-            />
-            <Button type="submit" variant="contained" color="primary">
-            Add Project
-            </Button>
-          </Form>
-          )}
-        </Formik>
-      </Grid>
-    </Grid>
+          <Grid container justifyContent="center">
+            <Grid item xs={6}>
+              <TextField
+                name="name"
+                label="Project Name"
+                variant="outlined"
+                fullWidth
+                sx={{ marginBottom: 1 }}
+                size="small"
+                {...formik.getFieldProps("name")}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
+              />
+              <TextField
+                name="desc"
+                label="Description"
+                variant="outlined"
+                fullWidth
+                sx={{ marginBottom: 1 }}
+                size="small"
+                {...formik.getFieldProps("desc")}
+                error={formik.touched.desc && Boolean(formik.errors.desc)}
+                helperText={formik.touched.desc && formik.errors.desc}
+              />
+              <TextField
+                name="hours_allocated"
+                label="Hours Allocated"
+                type="number"
+                variant="outlined"
+                fullWidth
+                sx={{ marginBottom: 1 }}
+                size="small"
+                {...formik.getFieldProps("hours_allocated")}
+                error={
+                  formik.touched.hours_allocated &&
+                  Boolean(formik.errors.hours_allocated)
+                }
+                helperText={
+                  formik.touched.hours_allocated &&
+                  formik.errors.hours_allocated
+                }
+              />
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DatePicker
+                  name="start_date"
+                  label="Start Date"
+                  value={
+                    formik.values.start_date
+                      ? parse(
+                          formik.values.start_date,
+                          "yyyy-MM-dd",
+                          new Date()
+                        )
+                      : null
+                  }
+                  onChange={(date) => {
+                    if (date) {
+                      formik.setFieldValue(
+                        "start_date",
+                        format(date, "yyyy-MM-dd")
+                      );
+                    }
+                  }}
+                  format="dd MMM, yy"
+                  slotProps={{
+                    textField: {
+                      size: "small",
+                      error:
+                        formik.touched.start_date &&
+                        Boolean(formik.errors.start_date),
+                      helperText:
+                        formik.touched.start_date && formik.errors.start_date,
+                      sx: { width: "100%", marginBottom: 1 },
+                      onBlur: () => {
+                        console.log(">>> START DATE  BLURRED::: ");
+                        formik.setFieldTouched("start_date", true);
+                      },
+                    },
+                  }}
+                />
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DatePicker
+                  name="deadline"
+                  label="Deadline"
+                  value={
+                    formik.values.deadline
+                      ? parse(formik.values.deadline, "yyyy-MM-dd", new Date())
+                      : null
+                  }
+                  onChange={(date) => {
+                    if (date) {
+                      formik.setFieldValue(
+                        "deadline",
+                        format(date, "yyyy-MM-dd")
+                      );
+                    }
+                  }}
+                  format="dd MMM, yy"
+                  slotProps={{
+                    textField: {
+                      size: "small",
+                      error:
+                        formik.touched.deadline &&
+                        Boolean(formik.errors.deadline),
+                      helperText:
+                        formik.touched.deadline && formik.errors.deadline,
+                      sx: { width: "100%", marginBottom: 1 },
+                      onBlur: () => {
+                        console.log(">>> START DATE  BLURRED::: ");
+                        formik.setFieldTouched("deadline", true);
+                      },
+                    },
+                  }}
+                />
+              </LocalizationProvider>
+
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  formik.submitForm();
+                }}
+              >
+                Create Project
+              </Button>
+            </Grid>
+          </Grid>
         </DialogContent>
-       
       </BootstrapDialog>
-    </React.Fragment>
+    </Fragment>
   );
 }

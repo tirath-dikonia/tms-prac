@@ -163,7 +163,7 @@ export default function UserPage() {
 
         {/* Right side: Add User button */}
         <Box ml={2}>
-          <AddProject open={isAddUser} setOpen={setIsAddUser} />
+          {isAddUser && <AddProject open={isAddUser} setOpen={setIsAddUser} />}
           <Button variant="contained" color="primary" onClick={handleClickOpen}>
             Add Project
           </Button>
