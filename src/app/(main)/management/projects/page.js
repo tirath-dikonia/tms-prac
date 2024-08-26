@@ -33,6 +33,8 @@ import AddProject from "@/components/management/projects/AddProject";
 import UpdateProject from "@/components/management/projects/UpdateProject";
 import { BASE_URL } from "@/config";
 import { format, parseISO } from "date-fns";
+import { PersonAdd } from "@mui/icons-material";
+import AssignUser from "@/components/management/projects/AssignUser";
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
 }
@@ -125,6 +127,7 @@ export default function ProjectPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [isAddItemModal, setIsAddItemModal] = useState(false);
   const [isUpdateScreen, setIsUpdateScreen] = useState(false);
+  const [isAssignUser, setIsAssignUser] = useState({assignUser: false, projectId: null});
    const [allListItems, setAllListItems] = useState([]);
   const [allListCount, setAllUsersCount] = useState(0);
   const [listDataGot, setListData] = useState();
@@ -146,7 +149,9 @@ export default function ProjectPage() {
   const handleUpdateUserOpen = () => {
     setIsUpdateScreen(true);
   };
-
+  const handleAssignUser = (id) => {
+    setIsAssignUser(prev => ({assignUser: !prev.assignUser, projectId: id}));
+  };
 
   useEffect(()=> {
     if(!listDataGot) return; 
@@ -188,6 +193,7 @@ export default function ProjectPage() {
         p={2}
       >
         <UpdateProject open={isUpdateScreen} setOpen={setIsUpdateScreen} />
+        {isAssignUser.assignUser && <AssignUser open={isAssignUser} setOpen={setIsAssignUser} />}
         {/* Left side: Search bar */}
         <Box flexGrow={1}>
           <TextField
@@ -242,7 +248,10 @@ export default function ProjectPage() {
                   <StyledTableCell>{format(parseISO(row.start_date), "dd MMM, yy")}</StyledTableCell>
                   <StyledTableCell>{format(parseISO(row.deadline), "dd MMM, yy")}</StyledTableCell>
                   <StyledTableCell>
-                    
+                  
+                  <IconButton aria-label="add permissions to user" onClick={() => {handleAssignUser(row._id)}} >
+                      <PersonAdd  color="primary" />
+                    </IconButton>
                     <IconButton aria-label="add permissions to user" onClick={handleUpdateUserOpen} >
                       <EditIcon  color="primary" />
                     </IconButton>

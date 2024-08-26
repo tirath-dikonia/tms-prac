@@ -34,20 +34,6 @@ function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
 }
 
-const rows = [
-  createData("Frozen yoghurt", "some val", "some val", "some val", "some val"),
-  createData(
-    "Ice cream sandwich",
-    "some val",
-    "some val",
-    "some val",
-    "some val"
-  ),
-  createData("Eclair", "some val", "some val", "some val", "some val"),
-  createData("Cupcake", "some val", "some val", "some val", "some val"),
-  createData("Gingerbread", "some val", "some val", "some val", "some val"),
-];
-
 function TablePaginationActions(props) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -126,8 +112,6 @@ export default function UserPage() {
   const [allUsersCount, setAllUsersCount] = useState(0);
   const [userData, setUserData] = useState();
   // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
